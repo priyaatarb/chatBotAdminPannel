@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <script>
+     async function removeFile(fileContent, fileType) {
+            const response = await fetch('/remove-file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: fileContent, type: fileType }),
+            });
+
+            const data = await response.json();
+            alert(data.message);
+            window.location.reload(); // Reload to update the list of files
+        }
+
+     async function uploadPDF() {
+            const pdfInput = document.getElementById("pdfInput");
+            if (!pdfInput.files.length) return alert("Select a PDF first!");
+
+            const formData = new FormData();
+            formData.append("pdf", pdfInput.files[0]);
+
+            const response = await fetch("/upload-pdf", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            alert(data.message);
+            window.location.reload(); // Reload to update the list of files
+        }
+
+     async function uploadURL() {
+            const urlInput = document.getElementById("urlInput").value;
+            if (!urlInput) return alert("Enter a URL first!");
+
+            const response = await fetch("/upload-url", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ url: urlInput })
+            });
+
+            const data = await response.json();
+            alert(data.message);
+            window.location.reload(); // Reload to update the list of files
+        }
+
+     async function clearVectorStore() {
+        const confirmation = confirm("Are you sure you want to delete all existing data from the vector store? This action cannot be undone.");
+
+        if (confirmation) {
+            const response = await fetch('/clear-vector-store', { method: 'POST' });
+            const data = await response.json();
+            alert(data.message);
+            window.location.reload();
+        } else {
+            alert("Action cancelled. No data has been deleted.");
+        }
+    }
+    </script>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <div>
+        <h2>Uploaded Files</h2>
+        <table border="1">
+            <tr>
+                <th>File Type</th>
+                <th>File Content</th>
+                <th>Action</th>
+            </tr>
+            <% files.forEach(function(file) { %>
+                <tr>
+                    <td><%= file.type %></td>
+                    <td><%= file.content %></td>
+                    <td><button onclick="removeFile('<%= file.content %>', '<%= file.type %>')">Remove</button></td>
+                </tr>
+            <% }); %>
+        </table>
+    </div>
+
+    <div>
+        <h3>Upload PDF</h3>
+        <input type="file" id="pdfInput">
+        <button onclick="uploadPDF()">Upload PDF</button>
+    </div>
+
+    <div>
+        <h3>Upload URL</h3>
+        <input type="text" id="urlInput" placeholder="Enter URL">
+        <button onclick="uploadURL()">Upload URL</button>
+    </div>
+
+    <div>
+        <button onclick="clearVectorStore()">Clear Vector Storage</button>
+    </div>
+</body>
+</html>
