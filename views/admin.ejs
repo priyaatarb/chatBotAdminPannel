@@ -77,13 +77,13 @@
             <tr>
                 <th>File Type</th>
                 <th>File Content</th>
-                <th>Action</th>
+                <th>Status</th>
             </tr>
             <% files.forEach(function(file) { %>
                 <tr>
                     <td><%= file.type %></td>
                     <td><%= file.content %></td>
-                    <td><button onclick="removeFile('<%= file.content %>', '<%= file.type %>')">Remove</button></td>
+                    <td>uploaded..</td>
                 </tr>
             <% }); %>
         </table>
